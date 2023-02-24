@@ -18,8 +18,8 @@ pwm.start(computeDutyCycle(frequency,0))
 print("Sent zero, sleeping 5")
 sleep(5)
 
-pwm.ChangeDutyCycle(computeDutyCycle(frequency,25))
-print("Sent 25%, sleeping 5")
+pwm.ChangeDutyCycle(computeDutyCycle(frequency,30))
+print("Sent 30%, sleeping 5")
 sleep(5)
 
 pwm.ChangeDutyCycle(computeDutyCycle(frequency,50))

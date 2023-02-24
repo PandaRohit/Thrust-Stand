@@ -184,11 +184,14 @@ while True:
          send_cmd("reset 1")
     while (ser.inWaiting() > (2 * len(slist))):
          for i in range(len(slist)):
+             
             # The four LSBs of slist determine measurement function
             function = slist[slist_pointer] & 0xf
             mode_bit = slist[slist_pointer] & 0x1000
+            
             # Always two bytes per sample...read them
             bytes = ser.read(2)
+
             if (function < 8) and (not(mode_bit)):
                 # Working with a Voltage input channel. Scale accordingly.
                 result = range_table[slist_pointer] * int.from_bytes(bytes,byteorder='little', signed=True) / 32768
@@ -198,7 +201,9 @@ while True:
                     result = result / 0.000667
                     output_string = output_string + "{: .3f}A, ".format(result)
                 elif i == 2:
-                    output_string = output_string + "{: .5f}N, ".format(result)
+                    result = (50 * (result - 0.00006)) / 0.018;
+                    output_string = output_string + "{: .3f}kg, ".format(result)
+                    
             elif (function < 8) and (mode_bit):
                 """
                 Working with a TC channel.
