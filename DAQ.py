@@ -2,6 +2,30 @@ import serial
 import serial.tools.list_ports
 import keyboard
 import time
+import datetime as dt
+import numpy
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+#Create figure for plotting
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+xs = []
+ys = []
+
+"""
+def animate(i, xs, ys, result):
+    xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+    ys.append(result)
+    xs = xs[-20:]
+    ys = ys[-20:]
+    ax.clear()
+    ax.plot(xs,ys)
+
+    plt.xticks(rotation=5,ha='right')
+    plt.title('Voltage')
+    plt.ylabel('Voltage (V)')
+"""
 
 """
 Change slist tuple to vary analog channel configuration.
@@ -166,6 +190,7 @@ while True:
     # If key 'esc' stop scanning
     if keyboard.is_pressed('s' or 'S'):
          keyboard.read_key()
+         plt.close(fig='all')
          send_cmd("stop")
          time.sleep(1)
          #ser.flushInput()
@@ -176,7 +201,9 @@ while True:
     # If key 'q' exit 
     if keyboard.is_pressed('q' or 'Q'):
          keyboard.read_key()
+         plt.close(fig='all')
          send_cmd("stop")
+         SystemExit
          break
         # If key 'r' reset counter 
     if keyboard.is_pressed('r' or 'R'):
@@ -196,13 +223,22 @@ while True:
                 # Working with a Voltage input channel. Scale accordingly.
                 result = range_table[slist_pointer] * int.from_bytes(bytes,byteorder='little', signed=True) / 32768
                 if i == 0:
+                    xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+                    ys.append(result)
+                    xs = xs[-30:]
+                    ys = ys[-30:]
+
+                    ax.clear()
+                    ax.plot(xs,ys)
+                    fig.canvas.draw
+                    plt.pause(0.001)
                     output_string = output_string + "{: .3f}V, ".format(result)
                 elif i == 1:
                     result = result / 0.000667
                     output_string = output_string + "{: .3f}A, ".format(result)
                 elif i == 2:
-                    result = (50 * (result - 0.00006)) / 0.018;
-                    output_string = output_string + "{: .3f}kg, ".format(result)
+                    result = (1000 * 50 * (result - 0.00006)) / 0.018 - 1200;
+                    output_string = output_string + "{: .3f}g, ".format(result)
                     
             elif (function < 8) and (mode_bit):
                 """

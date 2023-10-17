@@ -14,26 +14,28 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(PWM_PIN, GPIO.OUT)
 
 pwm = GPIO.PWM(PWM_PIN,frequency)
+
 pwm.start(computeDutyCycle(frequency,0))
 print("Sent zero, sleeping 5")
 sleep(5)
 
-pwm.ChangeDutyCycle(computeDutyCycle(frequency,30))
+pwm.ChangeDutyCycle(computeDutyCycle(frequency,100))
 print("Sent 30%, sleeping 5")
-sleep(5)
+sleep(7)
 
+"""
 pwm.ChangeDutyCycle(computeDutyCycle(frequency,50))
 print("Sent 50%, sleeping 5")
 sleep(5)
 
 pwm.ChangeDutyCycle(computeDutyCycle(frequency,100))
-print("Sent 100%, sleeping 2")
-sleep(2)
+print("Sent 100%, sleeping 5")
+sleep(5)
+"""
 
 pwm.ChangeDutyCycle(computeDutyCycle(frequency,0))
 print("Sent 0%, sleeping 2")
 sleep(2)
-
 
 pwm.stop()
 GPIO.cleanup()
