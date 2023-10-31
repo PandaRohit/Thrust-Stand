@@ -197,6 +197,7 @@ while True:
     if keyboard.is_pressed('q' or 'Q'):
          keyboard.read_key()
          send_cmd("stop")
+         df = df.T
          csv_data = df.to_csv('TTS.csv', index = False, header = False)
          print("Data sent to TTS.csv")
          SystemExit
@@ -221,15 +222,15 @@ while True:
                 # Working with a Voltage input channel. Scale accordingly.
                 result = range_table[slist_pointer] * int.from_bytes(bytes,byteorder='little', signed=True) / 32768
                 if i == 0:
-                    results.append("{: .3f}, ".format(result))
+                    results.append(round(result,3))
                     output_string = output_string + "{: .3f}V, ".format(result)
                 elif i == 1:
                     result = result / 0.000667
-                    results.append("{: .3f}, ".format(result))
+                    results.append(round(result,3))
                     output_string = output_string + "{: .3f}A, ".format(result)
                 elif i == 2:
                     result = (1000 * 50 * (result - 0.00006)) / 0.018 - 1200;
-                    results.append("{: .3f}, ".format(result))
+                    results.append(round(result,3))
                     output_string = output_string + "{: .3f}g, ".format(result)
                     
             elif (function < 8) and (mode_bit):
@@ -251,25 +252,25 @@ while True:
                     # Move TC type into 3 LSBs to form an index we'll use to select m & b scaling constants
                     tc_type = tc_type >> 8
                     result = tc_m[tc_type] * result + tc_b[tc_type]
-                    results.append("{: 3.3f}, ".format(result))
+                    results.append(round(result,3))
                     output_string = output_string + "{: 3.3f}, ".format(result)
 
             elif function == 8:
                 # Working with the Digital input channel 
                 result = (int.from_bytes(bytes,byteorder='big', signed=False)) & (0x007f)
-                results.append("{: 3d}, ".format(result))
+                results.append(round(result,3))
                 output_string = output_string + "{: 3d}, ".format(result)
 
             elif function == 9:
                 # Working with the Rate input channel
                 result = (int.from_bytes(bytes,byteorder='little', signed=True) + 32768) / 65535 * (range_table[slist_pointer])
-                results.append("{: 3.1f}, ".format(result))
+                results.append(round(result,3))
                 output_string = output_string + "{: 3.1f}, ".format(result)
 
             else:
                 # Working with the Counter input channel
                 result = (int.from_bytes(bytes,byteorder='little', signed=True)) + 32768
-                results.append("{: 1d}, ".format(result))
+                results.append(round(result,3))
                 output_string = output_string + "{: 1d}, ".format(result)
 
             # Get the next position in slist
